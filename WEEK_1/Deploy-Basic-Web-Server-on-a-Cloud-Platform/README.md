@@ -55,16 +55,29 @@ name.
 ## File Structure
 
 ```
+user@Godwin MINGW64 ~/Downloads/HUG-TERRAFORM-CHALLANGE/WEEK_1 (main)
+$ tree
 .
-├── main.tf                     # VPC, subnet, IGW, route table, security group, EC2 instance
-├── outputs.tf                  # Useful outputs (public IP, website URL, resource IDs)
-├── provider.tf                 # AWS provider + Terraform version constraints
-├── variables.tf                # Input variables (region, CIDRs, instance type, name, etc.)
-├── user_data.sh.tpl            # Boot script template: installs Nginx & renders the HTML page
-├── terraform.tfvars.example    # Example variable values — copy to terraform.tfvars
-├── assets/images/               # Deployment screenshots
-├── .gitignore
-└── README.md
+`-- Deploy-Basic-Web-Server-on-a-Cloud-Platform
+    |-- README.md
+    |-- assets
+    |   `-- images
+    |       |-- wk1_1.png
+    |       |-- wk1_2.png
+    |       |-- wk1_3.png
+    |       |-- wk1_4.png
+    |       |-- wk1_5.png
+    |       |-- wk1_6.png
+    |       |-- wk1_7.png
+    |       `-- wk1_8.png
+    |-- main.tf
+    |-- outputs.tf
+    |-- providers.tf
+    |-- terraform.tfstate
+    |-- terraform.tfstate.backup
+    |-- terraform.tfvars
+    |-- user_data.sh.tpl
+    `-- variables.tf
 ```
 
 ## Prerequisites
