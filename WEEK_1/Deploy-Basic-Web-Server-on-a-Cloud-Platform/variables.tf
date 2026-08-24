@@ -41,7 +41,7 @@ variable "key_name" {
 }
 
 variable "ssh_allowed_cidr" {
-  description = "CIDR block allowed to SSH into the instance. Restrict this to your own IP (e.g.  102.91.5.145/32) instead of leaving it open to the world."
+  description = "CIDR block allowed to SSH into the instance. Restrict this to your own IP (e.g.  0.0.0.0/32) instead of leaving it open to the world."
   type        = string
   default     = "0.0.0.0/0"
 }
