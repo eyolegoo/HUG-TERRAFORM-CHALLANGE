@@ -135,17 +135,26 @@ instance_type    = "t3.micro"            # confirm this is Free Tier-eligible in
 terraform init
 ```
 
+![Initialization](assets/images/wk1_1.png)
+
+
 ### 4. Review the execution plan
 
 ```bash
 terraform plan
 ```
 
+![terraform plan](assets/images/wk1_2.png)
+
+
 ### 5. Apply the configuration
 
 ```bash
 terraform apply
 ```
+
+![terraform apply](assets/images/wk1_3.png)
+
 
 Type `yes` when prompted. Provisioning takes about 1–2 minutes.
 
@@ -159,8 +168,14 @@ instance_public_ip  = "44.211.238.40"
 website_url         = "http://44.211.238.40"
 ```
 
+![output](assets/images/wk1_4.png)
+
+
 Open the `website_url` in a browser. Allow 30–60 seconds after the instance
 reaches "running" for `user_data` to finish installing Nginx.
+
+![website](assets/images/wk1_5.png)
+
 
 ### 7. (Optional) SSH into the instance
 
@@ -173,6 +188,10 @@ ssh -i ~/.ssh/HUG.pem ec2-user@44.211.238.40
 ```bash
 terraform destroy
 ```
+
+![terraform destroy](assets/images/wk1_7.png)
+![terraform destroy](assets/images/wk1_8.png)
+
 
 Type `yes` to confirm and avoid ongoing AWS charges.
 
@@ -203,10 +222,10 @@ Type `yes` to confirm and avoid ongoing AWS charges.
 ## Screenshots
 
 ### Web Page
-![Web page showing name and event](assets/images/webpage-screenshot.png)
+![Web page showing name and event](assets/images/wk1_5.png)
 
 ### EC2 Instance Running (AWS Console)
-![EC2 console showing instance running](assets/images/ec2-console-screenshot.png)
+![EC2 console showing instance running](assets/images/wk1_6.png)
 
 ## Customization
 
