@@ -1,19 +1,34 @@
-output "current_workspace" {
-  description = "The current active Terraform workspace."
-  value       = terraform.workspace
+output "vpc_id" {
+  description = "ID of the custom VPC"
+  value       = aws_vpc.main.id
 }
 
-output "public_ip_address" {
-  description = "The Public IP Address of the current environment's VM."
-  value       = azurerm_public_ip.pip.ip_address
+output "public_subnet_id" {
+  description = "ID of the public subnet"
+  value       = aws_subnet.public.id
 }
 
-output "web_url" {
-  description = "The HTTP web URL for the current environment."
-  value       = "http://${azurerm_public_ip.pip.ip_address}"
+output "internet_gateway_id" {
+  description = "ID of the Internet Gateway"
+  value       = aws_internet_gateway.igw.id
 }
 
-output "resource_group_name" {
-  description = "The name of the Resource Group created."
-  value       = azurerm_resource_group.rg.name
+output "security_group_id" {
+  description = "ID of the Security Group"
+  value       = aws_security_group.web_sg.id
+}
+
+output "instance_id" {
+  description = "ID of the EC2 instance"
+  value       = aws_instance.web.id
+}
+
+output "instance_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.web.public_ip
+}
+
+output "website_url" {
+  description = "URL to view the deployed web page"
+  value       = "http://${aws_instance.web.public_ip}"
 }

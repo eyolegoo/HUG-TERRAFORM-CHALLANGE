@@ -1,107 +1,136 @@
-# --- 1. Resource Group ---
-resource "azurerm_resource_group" "rg" {
-  name     = local.resource_group_name
-  location = var.location
-  tags     = local.common_tags
-}
+# -----------------------------
+# Data source: latest Amazon Linux 2023 AMI
+# -----------------------------
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
 
-# --- 2. Virtual Network and Subnet ---
-resource "azurerm_virtual_network" "vnet" {
-  name                = local.vnet_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  address_space       = ["10.0.0.0/16"]
-  tags                = local.common_tags
-}
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-x86_64"]
+  }
 
-resource "azurerm_subnet" "subnet" {
-  name                 = local.subnet_name
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.2.0/24"]
-}
-
-# --- 3. Network Security Group (NSG) to allow 22, 80, 443 ---
-resource "azurerm_network_security_group" "nsg" {
-  name                = local.nsg_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  tags                = local.common_tags
-
-  # Dynamic block for required ports: 22 (SSH), 80 (HTTP), 443 (HTTPS)
-  dynamic "security_rule" {
-    for_each = {
-      ssh   = 22
-      http  = 80
-    }
-    content {
-      name                       = "Allow-${security_rule.key}"
-      priority                   = 100 + security_rule.value
-      direction                  = "Inbound"
-      access                     = "Allow"
-      protocol                   = "Tcp"
-      source_port_range          = "*"
-      destination_port_range     = security_rule.value
-      source_address_prefix      = "Internet"
-      destination_address_prefix = "*"
-    }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
-# Associate NSG with the Subnet
-resource "azurerm_subnet_network_security_group_association" "nsg_assoc" {
-  subnet_id                 = azurerm_subnet.subnet.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
-}
+# -----------------------------
+# Custom VPC
+# -----------------------------
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
-# --- 4. Public IP Address ---
-resource "azurerm_public_ip" "pip" {
-  name                = local.public_ip_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method   = "Static"
-  tags                = local.common_tags
-}
-
-# --- 5. Network Interface (NIC) ---
-resource "azurerm_network_interface" "nic" {
-  name                = local.nic_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  tags                = local.common_tags
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.subnet.id
-    private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip.id
+  tags = {
+    Name = "${var.project_name}-vpc"
   }
 }
 
-# --- 6. Ubuntu 24.04 Virtual Machine ---
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                            = local.vm_name
-  location                        = azurerm_resource_group.rg.location
-  resource_group_name             = azurerm_resource_group.rg.name
-  size                            = local.env.vm_size
-  admin_username                  = var.vm_admin_username
-  admin_password                  = var.vm_admin_password
-  disable_password_authentication = false
-  network_interface_ids           = [azurerm_network_interface.nic.id]
-  tags                            = local.common_tags
+# -----------------------------
+# Public Subnet
+# -----------------------------
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block               = var.public_subnet_cidr
+  availability_zone        = var.availability_zone
+  map_public_ip_on_launch  = true
 
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
+  tags = {
+    Name = "${var.project_name}-public-subnet"
+  }
+}
+
+# -----------------------------
+# Internet Gateway
+# -----------------------------
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.project_name}-igw"
+  }
+}
+
+# -----------------------------
+# Route Table + Route to the Internet Gateway
+# -----------------------------
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
   }
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy" # Ubuntu 24.04 LTS
-    sku       = "22_04-lts"
-    version   = "latest"
+  tags = {
+    Name = "${var.project_name}-public-rt"
+  }
+}
+
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}
+
+# -----------------------------
+# Security Group: SSH (22) + HTTP (80)
+# -----------------------------
+resource "aws_security_group" "web_sg" {
+  name        = "${var.project_name}-web-sg"
+  description = "Allow SSH and HTTP inbound traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.ssh_allowed_cidr]
   }
 
-  # Executes the user_data.sh script on first boot
-  custom_data = base64encode(file("user_data.sh"))
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-web-sg"
+  }
+}
+
+# -----------------------------
+# EC2 Instance (Compute) in the Public Subnet
+# -----------------------------
+resource "aws_instance" "web" {
+  ami                         = data.aws_ami.amazon_linux.id
+  instance_type               = var.instance_type
+  subnet_id                   = aws_subnet.public.id
+  vpc_security_group_ids      = [aws_security_group.web_sg.id]
+  associate_public_ip_address = true
+  key_name                    = var.key_name != "" ? var.key_name : null
+
+  user_data = templatefile("${path.module}/user_data.sh.tpl", {
+    full_name  = var.full_name
+    event_name = var.event_name
+  })
+
+  tags = {
+    Name = "${var.project_name}-web-server"
+  }
+
+  depends_on = [aws_internet_gateway.igw]
 }

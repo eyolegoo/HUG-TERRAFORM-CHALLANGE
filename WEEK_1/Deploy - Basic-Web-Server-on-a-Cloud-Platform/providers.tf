@@ -1,15 +1,21 @@
-# Define the Azure Provider
-provider "azurerm" {
-  features {}
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  # Optional: uncomment and configure if you want remote state (e.g., S3 backend)
+  # backend "s3" {
+  #   bucket = "your-terraform-state-bucket"
+  #   key    = "hug-terraform-challenge/terraform.tfstate"
+  #   region = "us-east-1"
+  # }
 }
 
-# Remote Backend Configuration
-# These values MUST match the resources created by backend_setup.tf
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "terraform-state-rg"
-    storage_account_name = "tfstatewilliams123g"
-    container_name       = "tfstate"
-    # key is set by CLI command during workspace setup
-  }
+provider "aws" {
+  region = var.aws_region
 }
