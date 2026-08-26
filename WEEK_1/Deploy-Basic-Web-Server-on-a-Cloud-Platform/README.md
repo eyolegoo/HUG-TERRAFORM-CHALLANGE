@@ -106,8 +106,11 @@ cd hug-terraform-challenge
 
 ### 2. Configure your variables
 
-Edit the variables file with your details:
+Copy the example variables file and edit it with your details:
 
+```bash
+cp terraform.tfvars.example terraform.tfvars
+```
 
 Edit `terraform.tfvars`:
 
