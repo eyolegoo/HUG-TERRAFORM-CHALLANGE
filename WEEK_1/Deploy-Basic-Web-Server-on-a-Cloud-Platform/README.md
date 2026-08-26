@@ -230,7 +230,7 @@ Type `yes` to confirm and avoid ongoing AWS charges.
 
 ### EC2 Instance Running (AWS Console)
 
-![EC2 console showing instance running](assets/images/wk1_6.png)
+![EC2 console showing instance running](assets/images/wk1_6a.png)
 
 ## Customization
 
