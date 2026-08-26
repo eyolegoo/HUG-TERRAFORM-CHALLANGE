@@ -1,6 +1,6 @@
 # Project 1 – Deploy a Basic Web Server on AWS with Terraform
 
-**HUG Lagos/Ibadan Terraform Challenge**
+## HUG Lagos/Ibadan Terraform Challenge
 
 This project provisions a simple, self-contained web server on AWS using
 Terraform. It stands up its own networking from scratch (VPC, public subnet,
@@ -14,7 +14,7 @@ name.
 
 ## Architecture
 
-```
+```text
                         Internet
                             │
                     ┌───────▼────────┐
@@ -43,7 +43,7 @@ name.
 ## Resources Created
 
 | Resource | Terraform Type | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | Custom VPC | `aws_vpc` | Isolated network for the project |
 | Public Subnet | `aws_subnet` | Hosts the EC2 instance, auto-assigns public IPs |
 | Internet Gateway | `aws_internet_gateway` | Gives the VPC internet access |
@@ -54,7 +54,7 @@ name.
 
 ## File Structure
 
-```
+```text
 user@Godwin MINGW64 ~/Downloads/HUG-TERRAFORM-CHALLANGE/WEEK_1 (main)
 $ tree
 .
@@ -85,14 +85,18 @@ $ tree
 1. An AWS account with permissions to create VPC, EC2, and networking resources.
 2. [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.5.0 installed locally.
 3. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured with credentials:
+
    ```bash
    aws configure
    ```
+
 4. (Optional, for SSH access) An existing EC2 key pair in the target region — create it first via the EC2 Console or:
+
    ```bash
    aws ec2 create-key-pair --key-name HUG --region us-east-1 \
      --query 'KeyMaterial' --output text > ~/.ssh/HUG.pem
    ```
+
    Then set `key_name = "HUG"` (no `.pem`) in `terraform.tfvars`.
 
 ## Deployment Instructions
@@ -125,11 +129,13 @@ instance_type    = "t3.micro"            # confirm this is Free Tier-eligible in
 > region. If `terraform apply` fails with
 > `InvalidParameterCombination: The specified instance type is not eligible for Free Tier`,
 > check which types your account qualifies for with:
+>
 > ```bash
 > aws ec2 describe-instance-types --region us-east-1 \
 >   --filters "Name=free-tier-eligible,Values=true" \
 >   --query "InstanceTypes[].InstanceType" --output table
 > ```
+>
 > and set `instance_type` accordingly (this project was deployed successfully with `t3.micro`).
 
 ### 3. Initialize Terraform
@@ -140,7 +146,6 @@ terraform init
 
 ![Initialization](assets/images/wk1_1.png)
 
-
 ### 4. Review the execution plan
 
 ```bash
@@ -148,7 +153,6 @@ terraform plan
 ```
 
 ![terraform plan](assets/images/wk1_2.png)
-
 
 ### 5. Apply the configuration
 
@@ -158,14 +162,13 @@ terraform apply
 
 ![terraform apply](assets/images/wk1_3.png)
 
-
 Type `yes` when prompted. Provisioning takes about 1–2 minutes.
 
 ### 6. Get the website URL
 
 Terraform prints outputs at the end:
 
-```
+```text
 instance_id         = "i-0859145fff188f98d"
 instance_public_ip  = "44.211.238.40"
 website_url         = "http://44.211.238.40"
@@ -173,12 +176,10 @@ website_url         = "http://44.211.238.40"
 
 ![output](assets/images/wk1_4.png)
 
-
 Open the `website_url` in a browser. Allow 30–60 seconds after the instance
 reaches "running" for `user_data` to finish installing Nginx.
 
 ![website](assets/images/wk1_5.png)
-
 
 ### 7. (Optional) SSH into the instance
 
@@ -194,7 +195,6 @@ terraform destroy
 
 ![terraform destroy](assets/images/wk1_7.png)
 ![terraform destroy](assets/images/wk1_8.png)
-
 
 Type `yes` to confirm and avoid ongoing AWS charges.
 
@@ -225,15 +225,17 @@ Type `yes` to confirm and avoid ongoing AWS charges.
 ## Screenshots
 
 ### Web Page
+
 ![Web page showing name and event](assets/images/wk1_5.png)
 
 ### EC2 Instance Running (AWS Console)
+
 ![EC2 console showing instance running](assets/images/wk1_6.png)
 
 ## Customization
 
 | Variable | Default | Description |
-|---|---|---|
+| --- | --- | --- |
 | `aws_region` | `us-east-1` | AWS region to deploy into |
 | `vpc_cidr` | `10.0.0.0/16` | VPC CIDR block |
 | `public_subnet_cidr` | `10.0.1.0/24` | Public subnet CIDR block |
@@ -243,7 +245,6 @@ Type `yes` to confirm and avoid ongoing AWS charges.
 | `ssh_allowed_cidr` | `0.0.0.0/0` | CIDR allowed to SSH — restrict this! |
 | `full_name` | `Firstname Lastname` | Name shown on the web page |
 | `event_name` | `HUG Lagos/Ibadan Terraform Challenge` | Event name shown on the web page |
-
 
 ## Cost Note
 
