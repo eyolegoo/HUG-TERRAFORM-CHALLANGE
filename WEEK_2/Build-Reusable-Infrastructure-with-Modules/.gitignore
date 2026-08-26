@@ -1,0 +1,22 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Variable files / backend config that may contain sensitive or
+# account-specific values
+terraform.tfvars
+*.auto.tfvars
+backend.hcl
+
+# OS files
+.DS_Store

@@ -1,0 +1,13 @@
+# Copy this file to backend.hcl and fill in the values from your
+# backend-bootstrap `terraform apply` outputs, then run:
+#
+#   terraform init -backend-config="backend.hcl"
+#
+# backend.hcl is gitignored — it's environment-specific and shouldn't be
+# committed (bucket names are effectively account identifiers).
+
+bucket         = "your-terraform-state-bucket-name"
+key            = "hug-terraform-challenge/week2/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "hug-terraform-locks"
+encrypt        = true
