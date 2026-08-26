@@ -12,7 +12,7 @@ reused, tested, or swapped independently.
 ## What Changed From Week 1
 
 | Week 1 | Week 2 |
-|---|---|
+| --- | --- |
 | Everything in one `main.tf` | Split into `modules/vpc`, `modules/networking`, `modules/security`, `modules/compute` |
 | Local state (`terraform.tfstate` on disk) | Remote state in S3, locked via DynamoDB |
 | Hardcoded relationships between resources | Modules communicate via explicit `variables` in and `outputs` out |
@@ -106,9 +106,11 @@ $ tree
 1. An AWS account with permissions to create VPC, EC2, S3, and DynamoDB resources.
 2. [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.5.0.
 3. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), configured:
+
    ```bash
    aws configure
    ```
+
 4. (Optional, for SSH) An existing EC2 key pair in your target region.
 
 ## Deployment Instructions
@@ -137,9 +139,6 @@ terraform apply -var="state_bucket_name=godwin-hug-terraform-state-2026"
 
 ![Initialization](assets/images/wk2_1.png)
 ![Initialization](assets/images/wk2_2.png)
-
-
-
 
 ### Step 2 — Configure the backend for the main project
 
@@ -181,7 +180,6 @@ terraform init -backend-config="backend.hcl"
 
 ![Initialize the remote backend](assets/images/wk2_3.png)
 
-
 Terraform will confirm it's using the S3 backend. If you're migrating from
 local state (e.g. re-running this after Week 1), it will offer to copy your
 existing local state into S3 — say `yes`.
@@ -198,8 +196,6 @@ Type `yes` when prompted.
 ![terraform plan](assets/images/wk2_4.png)
 ![terraform apply](assets/images/wk2_5.png)
 
-
-
 ### Step 6 — Get the website URL
 
 ```
@@ -210,7 +206,6 @@ website_url         = "http://x.x.x.x"
 Open it in a browser (allow ~60 seconds for `user_data` to finish).
 
 ![website url](assets/images/wk2_6.png)
-
 
 ### Step 7 — Verify remote state
 
@@ -223,19 +218,22 @@ is no longer local.
 
 ![verify remote state](assets/images/wk2_7.png)
 
-
 ## Screenshots
 
 ### Web Page
+
 ![Web page showing name and event](assets/images/wk2_6.png)
 
 ### EC2 Instance Running (AWS Console)
+
 ![EC2 console showing instance running](assets/images/wk2_8.png)
 
 ### S3 Bucket
+
 ![S3 Bucket](assets/images/wk2_9.png)
 
 ### Dynamo DB
+
 ![Dynamo DB](assets/images/wk2_10.png)
 
 ### Step 8 — Tear down
@@ -245,7 +243,6 @@ terraform destroy
 ```
 
 ![terraform destroy](assets/images/wk2_11.png)
-
 
 The backend bucket/table from Step 1 are intentionally **not** destroyed by
 this command (they live in a separate configuration) so your state history
@@ -280,7 +277,6 @@ root level.
   rolled back to a previous version.
 - **Encryption**: state (which can contain sensitive values) is encrypted
   at rest via SSE-S3.
-
 
 ## Customization
 
