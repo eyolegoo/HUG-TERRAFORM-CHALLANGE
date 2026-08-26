@@ -244,6 +244,9 @@ is no longer local.
 terraform destroy
 ```
 
+![terraform destroy](assets/images/wk2_11.png)
+
+
 The backend bucket/table from Step 1 are intentionally **not** destroyed by
 this command (they live in a separate configuration) so your state history
 survives. Only destroy them manually via `backend-bootstrap` if you're fully
