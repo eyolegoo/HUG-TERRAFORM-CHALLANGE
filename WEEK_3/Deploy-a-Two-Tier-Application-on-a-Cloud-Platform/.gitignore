@@ -1,0 +1,23 @@
+# Local .terraform directories
+**/.terraform/*
+
+# Terraform state files (we use remote state, but ignore any local artifacts)
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Ignore variable files with real values / secrets
+terraform.tfvars
+*.auto.tfvars
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# Lock file — commit this in a real team setup; excluded here for template cleanliness
+# .terraform.lock.hcl
+
+# OS/editor files
+.DS_Store
+.vscode/
