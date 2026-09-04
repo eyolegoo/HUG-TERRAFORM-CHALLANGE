@@ -197,11 +197,22 @@ full list and defaults):
 
 ## Deliverables
 
+`VPC`
+
 ![Screenshot of the Virtual Private Network](assets/images/week3_8i.png)
+
+
+`Compute Instance`
 
 ![Screenshot of Compute Instance](assets/images/week3_9.png)
 
+
+`RDS Database Instance`
+
 ![Screenshot of RDS Database Instance](assets/images/week3_7.png)
+
+
+`Remote State`
 
 ![Screenshot of Remote State](assets/images/week3_10.png)
 ![Screenshot of Remote State](assets/images/week3_11.png)
