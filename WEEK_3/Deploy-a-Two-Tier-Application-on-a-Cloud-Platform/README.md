@@ -1,6 +1,6 @@
 # Two-Tier Application Deployment on AWS (Terraform)
 
-Provisions a secure, two-tier architecture on AWS using modular Terraform:
+I provisioned a secure, two-tier architecture on AWS using modular Terraform:
 a public-facing Nginx web server and a private, non-public RDS database,
 wired together with least-privilege security groups and remote state.
 
@@ -35,7 +35,7 @@ wired together with least-privilege security groups and remote state.
                     └───────────────────┘
 ```
 
-Two private subnets (in two AZs) are provisioned instead of one, because AWS
+Two private subnets (in two AZs) were provisioned instead of one, because AWS
 requires an RDS DB subnet group to span at least two Availability Zones —
 they function together as a single logical private tier.
 
@@ -106,7 +106,7 @@ Note the outputs — `state_bucket_name` and `lock_table_name`.
 
 ### 2. Configure the backend
 
-Edit `backend.tf` in the project root and replace the placeholder values
+Edit the `backend.tf` in the project root and replace the placeholder values
 with the outputs from step 1:
 
 ```hcl
@@ -127,7 +127,7 @@ terraform {
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edit `terraform.tfvars` and set, at minimum:
+Edit the `terraform.tfvars` and set, at minimum:
 - `my_ip_cidr` — your public IP in CIDR form, e.g. `203.0.113.5/32`
 - `key_name` — the name of your existing EC2 key pair
 - `db_password` — a strong password (better yet, source this from AWS
@@ -154,7 +154,7 @@ terraform output website_url
 curl $(terraform output -raw website_url)
 ```
 
-Open the URL in a browser to see the deployed webpage.
+I opened the URL in a browser to see the deployed webpage.
 
 ![webpage](assets/images/week3_6.png)
 
